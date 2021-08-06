@@ -1,0 +1,54 @@
+version: '3'
+services:      
+        sentiment:
+                image: datascientest/fastapi:1.0.0
+                ports:
+                        - 8000:8000
+                networks:
+                        - cicd_network
+        redis:
+                build: ./redis
+                ports:
+                        - 6379:6379
+                networks:
+                        - cicd_network
+        authentication:
+                build: ./authentication
+                volumes:
+                        - /home/ubuntu/modules/docker/cicd/cicd_compose/cicd_vol:/home/cicd_vol
+                networks:
+                        - cicd_network
+                environment: 
+                        - LOG=1
+                        - PRINT=1
+                depends_on:
+                        - "sentiment"                        
+                        - "redis"
+        authorization:
+                build: ./authorization
+                volumes:
+                        - /home/ubuntu/modules/docker/cicd/cicd_compose/cicd_vol:/home/cicd_vol
+                networks:
+                        - cicd_network
+                environment: 
+                        - LOG=1
+                        - PRINT=1  
+                depends_on:
+                        - "sentiment"                        
+                        - "redis"
+        content:
+                build: ./content
+                volumes:
+                        - /home/ubuntu/modules/docker/cicd/cicd_compose/cicd_vol:/home/cicd_vol
+                networks:
+                        - cicd_network
+                environment: 
+                        - LOG=1
+                        - PRINT=1
+                depends_on:
+                        - "sentiment"                        
+                        - "redis"
+networks:
+        cicd_network:
+
+

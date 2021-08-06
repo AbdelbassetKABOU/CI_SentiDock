@@ -1,0 +1,12 @@
+SET api_address 'sentiment' 
+SET api_port '8000' 
+SET logfile 'api_test.log' 
+SET volume "\/home\/cicd_vol\/"
+
+
+SET authorization_output "\n \t \t ============================ \n \t \t \t Authorization test \n \t\t ============================ \n \t \t request done at \"/v1/sentiment\" \n \t \t \t \t\& \"/v2/sentiment/\"\n \t \t \t | username=\"{login}\" \n \t \t \t | sentence=\"This is a sentence\"\n\n\t\t expected result = {expected_code}\n\t\t actual result = {status_code}\n\n\t\t ==>  {test_status}\n"
+
+SET authentication_output "\n \t \t ============================ \n \t \t      Authentication test \n \t \t ============================ \n \t \t request done at \"/permissions\" \n \t \t \t | username=\"{login}\" \n \t \t \t | password=\"{password}\" \n \n \t \t - expected result = 200 \n \t \t - actual restult = {status_code} \n \n \t \t ==>  {test_status}\n"
+
+SET content_output "\n\t\t ============================ \n\t\t\t Content test \n \t\t ============================ \n \t\t request done at \"/v1/sentiment\"\n \t \t \t \t\& \"/v2/sentiment/\" \n \t \t \t | username=\"{login}\"\n \t\t\t | sentence=\"{sentence}\"\n\n\t\t expected result = {expected_code}\n\t\t actual result = {status_code}\n\n\t\t ==>  {test_status}\n"             
+
