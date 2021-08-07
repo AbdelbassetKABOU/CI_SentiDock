@@ -4,6 +4,12 @@
 
 L'objectif est de crier un pipeline CI/CD pour tester une API. Nous allons nous placer dans la peau d'une équipe censé créer une batterie de test à appliquer automatiquement avant déploiement.
 
+## Usage
+
+Lancez la commande : ``` ./docker-compose up ```. Suivant les variables d'environement _**PRINT**_ et _**LOG**_ _(dans le fichier _docker-compose.yml)_, le résultat des tests sera affiché sur la console et/ou sur le fichier _**api\_test.log**_ à l'intérieur du répertoire _cicd_vol_.
+
+## API
+
 Dans ce scénario, une équipe a créé une application qui permet d'utiliser un algorithme de sentiment analysis: il permet de prédire si une phrase (en anglais) a plutôt un caractère positif ou négatif. Cette API va être déployée dans un container dont l'image est pour l'instant :
 ```
 datascientest/fastapi:1.0.0
