@@ -2,9 +2,9 @@
 
 ## Objectif
 
-L'objectif de ce repo est de créer un pipeline CI/CD pour tester une API. Nous allons nous placer dans la peau d'une équipe censé créer une batterie de test à appliquer automatiquement avant déploiement.
+L'objectif est de crier un pipeline CI/CD pour tester une API. Nous allons nous placer dans la peau d'une équipe censé créer une batterie de test à appliquer automatiquement avant déploiement.
 
- Dans ce scénario, une équipe a créé une application qui permet d'utiliser un algorithme de sentiment analysis: il permet de prédire si une phrase (en anglais) a plutôt un caractère positif ou négatif. Cette API va être déployée dans un container dont l'image est pour l'instant :
+Dans ce scénario, une équipe a créé une application qui permet d'utiliser un algorithme de sentiment analysis: il permet de prédire si une phrase (en anglais) a plutôt un caractère positif ou négatif. Cette API va être déployée dans un container dont l'image est pour l'instant :
 ```
 datascientest/fastapi:1.0.0
 ```
@@ -42,17 +42,17 @@ Pour chacune des versions du modèle, on devrait récupérer un score positif po
 
 Pour chacun des tests, nous créons un container séparé qui effectuera ces tests. L'idée d'avoir un container par test permet de ne pas changer tout le pipeline de test si jamais une des composantes seulement a changé.
 
-Le testeur se dispose de deux variables d’environnements. Si le variable **LOG** vaut 1, alors il faut imprimer une trace dans un fichier `api_test.log`. Si **PRINT** vaut 1, on imprime cette trace sur la console.
+Le testeur se dispose de deux variables d’environnements. Si le variable **LOG** vaut 1, on imprime une trace dans un fichier `api_test.log`. Si **PRINT** vaut 1, on l'imprime sur la console.
 
-Trois type de tests sont disponibles, i.e. Authentication, Authorization et Content. Les trois types partagent la même structure :
+Trois type de tests sont disponibles : _Authentication_, _Authorization_ et _Content_. Les trois types partagent la même structure, à savoir :
 
--  Un fichier contenant la partie métier ({**_authentication, authorization et content. py_**})
+- Un fichier de la partie métier ({**_authentication, authorization et content. py_**})
 - Un fichier de configuration _**(config. py)**_ rassemblant l’essentiel des variables utilisés pour chaque type de test, e.g. _adresse de l'API, port, log file,_ etc.
-- Un fichier _**database. py**_ contenant l'ensembles des utilisateurs et des phrases requises pour les tests.
+- Un fichier _**database. py**_ contenant l'ensembles des utilisateurs (_users_database_) et des phrases (_sentences_database_) requises pour les tests.
 
 ## Redis
 
-Pour une meilleure performance, les variables de configurations sont sollicités depuis une base de donnée de type _**«redis»**_ avec les couples _**key/value**_ suivants :
+Pour une meilleure performance, les variables de configurations (ainsi que les base de données des utilisateurs/phrases) sont sollicités depuis une base de donnée de type _**«redis»**_ avec les couples _**key/value**_ suivants :
 
 - _**api_address :**_ adresse du serveur d'API
     
@@ -76,13 +76,24 @@ Pour une meilleure performance, les variables de configurations sont sollicités
     actual restult = {status_code}
     ==> {test_status}
     ```
- - _**authorization_output, content_output,**_ i.e. des templates relatives aux tests d'autorisation et de contenu
-- _**users :**_ l'ensemble des utilisateurs necessaires pour accomplir les requêtes de test.log
-- _**sentences**_ : l'ensemble des phrases de test,
-  
-Ensuite, on construira les images Docker via des DockerFile pour lancer ces tests (Dockerfile à l'intérieur de chaque répertoire de test)
+- _**authorization_output, content_output,**_ i.e. des templates relatives aux tests d'autorisation et de contenu
+- _**users :**_ l'ensemble des utilisateurs (nombre d'utilisateurs jugé necessaires pour accomplir les requêtes de test.log)
+- _**sentences**_ : l'ensemble des phrases de test (requise notament lors des test de type "_content_")
+
+A noter que _Redis_, par défault, ne supporte pas des structures de donnée de type _**nested_dictionnaries**_, pour remédier à ce problème, on a dévisé chaque base de donnée en deux parties, une englobant uniquement les logins, e.g. "alice", "bob", et l'autres listant les détails de chaque utilisateurs (e.g. 'alice':{'password': "xxxx", 'v1': 1, 'v2': 1}).
+
+Le lancement du redis se fait via un script shell _(start-redis.sh)_. Le fichier permet également d'inserer les données (keys) vu précédament via _redis-cli_ et un fichier nommé _redis-dump.csv_ dont voici un extrait :
+
+```
+SET api_address 'sentiment'
+SET api_port '8000'
+...
+```
 
 ### Docker Compose
+
+On construira par la suite les images Docker via des DockerFile pour lancer ces tests (fichiers présent à l'intérieur de chaque répertoire de test)
+
 Pour une meilleure automatisation, on utilise _Docker Compose_ qui est un outil très utilisé pour les pipelines de CI/CD. Il nous permet de lancer nos différents tests d'un coup tout en facilitant le partage de données entre les différents tests. `docker-compose.yml` est notre fichier qui organise ce pipeline.
 
 Le fichier au final décrit cinq conteneurs (services), à savoir : _authentication, authorization, content_ ainsi que les deux derniers : _sentiment_ (serveur d'API) et _redis_ (base de donnée).
@@ -91,3 +102,4 @@ A noter les routines _**depends_on**_ et _**networks**_. La première assure le 
 
 ## Comming soon
 
+Dans le cadre d'un déployement en production, il se peut necessaire d'ajouter l'authentification au serveur Redis. Le stockage en clair des password est biensur à éviter, la bibliothèque _**bcrypt**_ me semble un choix judicieux. 

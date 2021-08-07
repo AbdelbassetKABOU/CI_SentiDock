@@ -31,8 +31,8 @@ services:
                 networks:
                         - cicd_network
                 environment: 
-                        - LOG=1
-                        - PRINT=1  
+                        - LOG=0
+                        - PRINT=0  
                 depends_on:
                         - "sentiment"                        
                         - "redis"
@@ -43,8 +43,8 @@ services:
                 networks:
                         - cicd_network
                 environment: 
-                        - LOG=1
-                        - PRINT=1
+                        - LOG=0
+                        - PRINT=0
                 depends_on:
                         - "sentiment"                        
                         - "redis"

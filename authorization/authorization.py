@@ -3,10 +3,6 @@ import requests
 import database as db
 import config as cfg 
 
-api_address = cfg.api_address
-api_port = cfg.api_port
-myoutput = cfg.authorization_output
-
 
 def authorization_test (login, password, v1, v2):
     r_v1 = requests.get(
@@ -28,14 +24,9 @@ def authorization_test (login, password, v1, v2):
                 'sentence': 'this is a sentence'
             }
         )
-    # statut de la requête
-    status_code = (r_v1.status_code, r_v2.status_code)
-    expected_code = (v1, v2)
+    status_code = (int(r_v1.status_code==200), int(r_v2.status_code==200))
+    expected_code = (int(v1), int(v2))
     output = myoutput
-    '''return """ for {}, 
-               expected output : () 
-               actual status_code = {}""".format(login, status_code)'''
-
 
     # affichage des résultats
     if status_code == expected_code:
@@ -51,21 +42,24 @@ def authorization_test (login, password, v1, v2):
                password=password
             )
 
-database = db.users
-volume = cfg.volume
-myfile = cfg.logfile
 
 def file_output(output):
-    #if os.environ.get('LOG') == 1:
         file_path = volume+myfile
         with open(file_path, 'a') as file:
             file.write(output)
             file.close()
 
 
+# my variable 
+api_address = cfg.api_address
+api_port = cfg.api_port
+myoutput = cfg.authorization_output
+database = db.users_database
+volume = cfg.volume
+myfile = cfg.logfile
+
 for key, value in database.items() :
     output = authorization_test (key, value['password'], value['v1'], value['v2'])
-    #print (output)
     if os.environ.get('PRINT') == '1':
         print (output)
     if os.environ.get('LOG') == '1':
@@ -74,9 +68,3 @@ for key, value in database.items() :
 
 
 
-"""
-# impression dans un fichier
-if os.environ.get('LOG') == 1:
-    with open('api_test.log', 'a') as file:
-        file.write(output)
-"""
