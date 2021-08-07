@@ -33,8 +33,8 @@ Dans ce deuxième test, nous allons vérifier que la logique de gestion des droi
 ### Content
 
 Dans ce dernier test, nous vérifions que l'API fonctionne comme elle doit fonctionner. Nous allons tester les phrases suivantes avec le compte d'`alice`:
--  life is beautiful
--  that sucks
+-  _life is beautiful_
+-  _that sucks_
 
 Pour chacune des versions du modèle, on devrait récupérer un score positif pour la première phrase et un score négatif pour la deuxième phrase. Le test consistera à vérifier la positivité ou négativité du score.
 
@@ -46,13 +46,13 @@ Le testeur se dispose de deux variables d’environnements. Si le variable **LOG
 
 Trois type de tests sont disponibles : _Authentication_, _Authorization_ et _Content_. Les trois types partagent la même structure, à savoir :
 
-- Un fichier de la partie métier ({**_authentication, authorization et content. py_**})
+- Un fichier de la partie métier (**_authentication.py_**, **_authorization.py_** et **_content.py_**)
 - Un fichier de configuration _**(config. py)**_ rassemblant l’essentiel des variables utilisés pour chaque type de test, e.g. _adresse de l'API, port, log file,_ etc.
-- Un fichier _**database. py**_ contenant l'ensembles des utilisateurs (_users_database_) et des phrases (_sentences_database_) requises pour les tests.
+- Un fichier _**database. py**_ contenant l'ensembles des utilisateurs _(users_database)_ et des phrases _(sentences_database)_ requises pour les tests.
 
 ## Redis
 
-Pour une meilleure performance, les variables de configurations (ainsi que les base de données des utilisateurs/phrases) sont sollicités depuis une base de donnée de type _**«redis»**_ avec les couples _**key/value**_ suivants :
+Pour une meilleure performance, les variables de configurations _(ainsi que les données des utilisateurs/phrases de test)_ sont sollicités depuis une base de donnée de type _**redis**_, avec les couples _**key/value**_ suivants :
 
 - _**api_address :**_ adresse du serveur d'API
     
@@ -77,12 +77,12 @@ Pour une meilleure performance, les variables de configurations (ainsi que les b
     ==> {test_status}
     ```
 - _**authorization_output, content_output,**_ i.e. des templates relatives aux tests d'autorisation et de contenu
-- _**users :**_ l'ensemble des utilisateurs (nombre d'utilisateurs jugé necessaires pour accomplir les requêtes de test.log)
+- _**users :**_ l'ensemble des utilisateurs de test _(necessaires pour les requêtes de test)_
 - _**sentences**_ : l'ensemble des phrases de test (requise notament lors des test de type "_content_")
 
-A noter que _Redis_, par défault, ne supporte pas des structures de donnée de type _**nested_dictionnaries**_, pour remédier à ce problème, on a dévisé chaque base de donnée en deux parties, une englobant uniquement les logins, e.g. "alice", "bob", et l'autres listant les détails de chaque utilisateurs (e.g. 'alice':{'password': "xxxx", 'v1': 1, 'v2': 1}).
+A noter que _Redis_, par défault, ne supporte pas des structures de type _**nested_dictionnaries**_. Pour remédier à ce problème, on a dévisé chaque base de donnée en deux parties, une englobant uniquement les logins _(e.g. "alice", "bob", etc)_ et l'autre listant les détails de chaque utilisateurs _(e.g. 'alice': {'password': "xxxx", 'v1': 1, 'v2': 1})_.
 
-Le lancement du redis se fait via un script shell _(start-redis.sh)_. Le fichier permet également d'inserer les données (keys) vu précédament via _redis-cli_ et un fichier nommé _redis-dump.csv_ dont voici un extrait :
+Le lancement du serveur se fait via un script shell _(start-redis.sh)_. Le fichier permet également d'inserer les données _(keys)_ vues précédament via le client _redis-cli_ avec un fichier nommé _redis-dump.csv_ dont voici un extrait :
 
 ```
 SET api_address 'sentiment'
@@ -92,9 +92,9 @@ SET api_port '8000'
 
 ### Docker Compose
 
-On construira par la suite les images Docker via des DockerFile pour lancer ces tests (fichiers présent à l'intérieur de chaque répertoire de test)
+On construira par la suite les images Docker via des DockerFile (fichiers présent à l'intérieur de chaque répertoire de test)
 
-Pour une meilleure automatisation, on utilise _Docker Compose_ qui est un outil très utilisé pour les pipelines de CI/CD. Il nous permet de lancer nos différents tests d'un coup tout en facilitant le partage de données entre les différents tests. `docker-compose.yml` est notre fichier qui organise ce pipeline.
+Pour une meilleure automatisation, on utilise _Docker Compose_ qui est un outil très utilisé pour les pipelines de CI/CD. Il nous permet de lancer nos différents tests d'un coup tout en facilitant le partage de données entre les différents tests. _docker-compose.yml_ est notre fichier qui organise ce pipeline.
 
 Le fichier au final décrit cinq conteneurs (services), à savoir : _authentication, authorization, content_ ainsi que les deux derniers : _sentiment_ (serveur d'API) et _redis_ (base de donnée).
 
@@ -102,4 +102,4 @@ A noter les routines _**depends_on**_ et _**networks**_. La première assure le 
 
 ## Comming soon
 
-Dans le cadre d'un déployement en production, il se peut necessaire d'ajouter l'authentification au serveur Redis. Le stockage en clair des password est biensur à éviter, la bibliothèque _**bcrypt**_ me semble un choix judicieux. 
+Dans le cadre d'un déployement en production, il se peut necessaire d'ajouter _**l'authentification**_ au serveur _Redis_. Le stockage en clair des password est également à éviter. L'utilisatuion de la bibliothèque _**bcrypt**_ me semble un choix judicieux dans ce cas. 
