@@ -77,12 +77,12 @@ Pour une meilleure performance, les variables de configurations _(ainsi que les 
     ==> {test_status}
     ```
 - _**authorization_output, content_output,**_ i.e. des templates relatives aux tests d'autorisation et de contenu
-- _**users :**_ l'ensemble des utilisateurs de test _(necessaires pour les requêtes de test)_
-- _**sentences**_ : l'ensemble des phrases de test (requise notament lors des test de type "_content_")
+- _**users :**_ l'ensemble des utilisateurs de test _(nécessaires pour les requêtes de test)_
+- _**sentences**_ : l'ensemble des phrases de test (requise notamment lors des test de type "_content_")
 
-A noter que _Redis_, par défault, ne supporte pas des structures de type _**nested_dictionnaries**_. Pour remédier à ce problème, on a dévisé chaque base de donnée en deux parties, une englobant uniquement les logins _(e.g. "alice", "bob", etc)_ et l'autre listant les détails de chaque utilisateurs _(e.g. 'alice': {'password': "xxxx", 'v1': 1, 'v2': 1})_.
+A noter que _Redis_, par défault, ne supporte pas des structures de type _**nested_dictionnaries**_. Pour remédier à ce problème, on a diviser chaque base de donnée en deux parties, une englobant uniquement les logins _(e.g. "alice", "bob", etc)_ et l'autre listant les détails de chaque utilisateurs _(e.g. 'alice': {'password': "xxxx", 'v1': 1, 'v2': 1})_.
 
-Le lancement du serveur se fait via un script shell _(start-redis.sh)_. Le fichier permet également d'inserer les données _(keys)_ vues précédament via le client _redis-cli_ avec un fichier nommé _redis-dump.csv_ dont voici un extrait :
+Le lancement du serveur se fait via un script shell _(start-redis.sh)_. Le fichier permet également d'insérer les données _(keys)_ vues précédemment via le client _redis-cli_ avec un fichier nommé _redis-dump.csv_ dont voici un extrait :
 
 ```
 SET api_address 'sentiment'
@@ -98,8 +98,8 @@ Pour une meilleure automatisation, on utilise _Docker Compose_ qui est un outil 
 
 Le fichier au final décrit cinq conteneurs (services), à savoir : _authentication, authorization, content_ ainsi que les deux derniers : _sentiment_ (serveur d'API) et _redis_ (base de donnée).
 
-A noter les routines _**depends_on**_ et _**networks**_. La première assure le lancement des deux service (_sentiment et redis_) avant l'execution des tests. La deuxième déclare et précise que l'ensemble de l'infrastructure est interconnectée via un réseau virtuel baptisé _**cicd_networkd**_
+A noter les routines _**depends_on**_ et _**networks**_. La première assure le lancement des deux service (_sentiment et redis_) avant l'exécution des tests. La deuxième déclare et précise que l'ensemble de l'infrastructure est interconnectée via un réseau virtuel baptisé _**cicd_networkd**_
 
 ## Comming soon
 
-Dans le cadre d'un déployement en production, il se peut necessaire d'ajouter _**l'authentification**_ au serveur _Redis_. Le stockage en clair des password est également à éviter. L'utilisatuion de la bibliothèque _**bcrypt**_ me semble un choix judicieux dans ce cas. 
+Dans le cadre d'un déploiement en production, il se peut nécessaire d'ajouter _**l'authentification**_ au serveur _Redis_. Le stockage en clair des password est également à éviter. L'utilisation de la bibliothèque _**bcrypt**_ me semble un choix judicieux dans ce cas. 
